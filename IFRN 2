@@ -1,0 +1,475 @@
+using System;
+
+using System.Collections.Generic;
+
+using System.Data;
+
+using Mono.Data.Sqlite;
+
+public class Mercadoria
+
+{
+
+  private int _identificacao;
+
+  private string _marca;
+
+  private double _valor;
+
+  public int Identificacao
+
+  {
+
+    get {
+
+      return _identificacao;
+
+    }
+
+  }
+
+  public string Marca
+
+  {
+
+    get {
+
+      return _marca;
+
+    }
+
+  }
+
+  public double Valor{
+
+    get {
+
+      return _valor;
+
+    }
+
+  }
+
+  public Mercadoria(string marca, double valor)
+
+  {
+
+    this._marca = marca;
+
+    this._valor = valor;
+
+  }//END METHOD
+
+  public void Imprimir()
+
+  {
+
+    Console.WriteLine("+++++++++++++++++++++++++");
+
+    Console.WriteLine("Identificação:\t\t\t{0}", this._identificacao);
+
+    Console.WriteLine("Mercadoria:\t{0}", this._marca);
+
+    Console.WriteLine("Valor:\t\tR$ {0:0.00}\n", this._valor);
+
+    Console.WriteLine("++++++++++++++++++++++++++++");
+
+  }
+
+  public void Continuar()
+
+  {
+
+    using (var connection = new SqliteConnection("Data Source=banco.db"))
+
+    {
+
+      connection.Open();
+
+      var command = connection.CreateCommand();
+
+      command.CommandText =
+
+      @"
+
+        INSERT INTO mercadoria (marca, valor)
+
+        VALUES ($marca, $valor);
+
+      ";
+
+      command.Parameters.AddWithValue("$marca", this._marcs);
+
+      command.Parameters.AddWithValue("$valor", this._valor);
+
+      command.ExecuteNonQuery();
+
+      Console.WriteLine("+++++++++++++++++++++++++++");
+
+      Console.WriteLine("Incluído");
+
+
+      Console.WriteLine("Clique em S para sair");
+
+      Console.WriteLine("+++++++++++++++++++++++++");
+
+    }
+
+  }
+
+  public static List<Mercadoria> ProcurarMercadorias(string mercadoria_)
+
+  {
+
+   
+
+    List<Mercadoria> mercadorias = new List<Mercadoria>();
+
+    using (var connection = new SqliteConnection("Data Source=banco.db"))
+
+    {
+
+      connection.Open();
+
+      var command = connection.CreateCommand();
+
+
+
+
+
+        SELECT identificacao, marca, valor
+
+        FROM mercadoria
+
+        WHERE nome LIKE '%' || item ||'%';
+
+      
+
+      command.Parameters.AddWithValue("item", mercadoria_);
+
+  
+
+      using (var reader = command.ExecuteReader())
+
+      {
+
+        while (reader.Read())
+
+        {
+
+          var identificacao = reader.GetInt32(0);
+
+          var marca = reader.GetString(1);
+
+          var valor = reader.GetDouble(2);
+
+          Mercadoria objeto = new Mercadoria(marca, valor);
+
+          objeto._identificacao = identificacao;
+
+          mercadorias.Add(objeto);
+
+        }
+
+      }
+
+    }
+
+  return meracdorias;
+
+  }
+
+  public static List<Mercadoria> VerificarMercadorias()
+
+    {
+
+      List<Mercadoria> mercadorias = new List<Mercadoria>();
+
+      using (var connection = new SqliteConnection("Data Source=banco.db"))
+
+      {
+
+        connection.Open();
+
+        var command = connection.CreateCommand();
+
+
+
+
+
+          SELECT identificacao, marca, valor
+
+          FROM produto;
+
+   
+
+        using (var reader = command.ExecuteReader())
+
+        {
+
+          while (reader.Read())
+
+          {
+
+            var identificacao = reader.GetInt32(0);
+
+            var nome = reader.GetString(1);
+
+            var preco = reader.GetDouble(2);
+
+            Mercadoria objeto = new Produto(marca, valor);
+
+            objeto._identificacao = identificacao;
+
+            produtos.Add(objeto);
+
+          }
+
+        }
+
+      }
+
+      return mercadorias;
+
+    }
+
+  public static void Excluir()
+
+ {
+
+    using( var connection = new SqliteConnection("Data Source=banco.db"))
+
+     {
+
+      connection.Open();
+
+      var command = connection.CreateCommand();
+
+
+
+
+
+       DELETE FROM mercadoria;
+
+
+
+      command.ExecuteNonQuery();
+
+      Console.WriteLine("++++++++++++++++++++++++++");
+
+      Console.WriteLine("Excluído");
+
+      Console.WriteLine("Clique em S para sair");
+
+      Console.WriteLine("++++++++++++++++++++++++++++");
+
+     }
+
+ }
+
+
+
+}
+
+
+class MainClass {
+
+   
+
+  public static void Cadastrar(){
+
+ 
+
+    Console.WriteLine("\n\nCadastro de Mercadoria");
+
+    Console.Write("Marca: ");
+
+    string Marca = Console.ReadLine();
+
+    Console.Write("Valor: ");
+
+    double valor = Convert.ToDouble(Console.ReadLine());
+
+    Mercadoria objeto = new Mercadoria(marca, valor);
+
+    objeto.Continuar();
+
+  }
+
+  public static void Organizar()
+
+  {
+
+    Console.WriteLine("\n");
+
+    List<Mercadoria> mercadorias = Mercadoria.ConsultarMercadorias();
+
+    foreach(var mercadoria in mercadorias)
+
+    {
+
+      mercadoria.Imprimir();
+
+    }
+
+    Console.WriteLine("+++++++++++++++++++++++++");
+
+    Console.WriteLine("Clique em V para retornar");
+
+    Console.WriteLine("++++++++++++++++++++++++++");
+
+  }
+
+  public static void Encontrar()
+
+  {  
+
+    Console.Clear();
+
+    Console.WriteLine("++++++++++++++++++++++++++++");
+
+    Console.WriteLine("Marca ou nome da mercadoria");
+
+    Console.WriteLine("+++++++++++++++++++++++++++");
+
+    string encontrar_ = Console.ReadLine();
+
+ 
+
+    Console.Clear();
+
+    Console.WriteLine("+++++++++++++++++++++++++");
+
+    Console.WriteLine("Resultados encontrados: {0}", encontrar_);
+
+    Console.WriteLine("+++++++++++++++++++++++++++++++++++");
+
+  
+
+    List<Mercadoria> mercadorias = mercadoria.EncontrarMercadoria(encontrar_);
+
+    foreach(var mercadoria in mercadoria)
+
+    {
+
+      mercadoria.Imprimir();
+
+    }
+
+  
+
+    Console.WriteLine("+++++++++++++++++++++++++++++");
+
+    Console.WriteLine("Clique em V para retornar");
+
+    Console.WriteLine("+++++++++++++++++++++++++++");
+
+  }
+
+ 
+
+ 
+
+    public static void Main(string[] args)
+
+          {                 
+
+                bool MostrarMenu = true;
+
+                while (MostrarMenu)
+
+                {
+
+                    MostrarMenu = MenuPrincipal();
+
+                }
+
+          }
+
+          private static bool MenuPrincipal()
+
+            {
+
+                Console.Clear();
+
+                Console.WriteLine("++++++++++++++++++++++++++++++++++++++++++");
+
+                Console.WriteLine("Aperte 'O' para Organizar as mercadorias ");
+
+                Console.WriteLine("Aperte 'C' para Cadastrar a mercadoria");
+
+                Console.WriteLine("Aperte 'E' para Excluir todas as mercadoriaa");
+
+                Console.WriteLine("Aperte 'P' para Encontrar a mercadoria");
+
+                Console.WriteLine("Aperte 'F' para Finalizar o processo");
+
+                Console.WriteLine ("+++++++++++++++++++++++++++++++++++");
+
+                switch (Console.ReadLine())
+
+                {
+
+                        
+
+                        case "O":
+
+                            Organizar();
+
+                            Console.Read();    
+
+                         return true;
+
+                        case "C":
+
+                            Cadastrar();
+
+                            Console.Read();                          
+
+                        return true;
+
+                        case "E":
+
+                            Mercadoria.Excluir();
+
+                            Console.Read();                          
+
+                        return true;
+
+                        case "P":                       
+
+                            Encontrar();
+
+                            Console.Read();   
+
+                        return true;
+
+                 
+
+                        case "F":
+
+                           Console.Clear();
+
+                           Console.WriteLine("+++++++++++++++++++++++++++++++++");
+
+                           Console.WriteLine("Finalizado");
+
+       
+
+                           Console.WriteLine("++++++++++++++++++++++++++++++++++++");
+
+                           return false;
+
+                           
+
+                     
+
+                        default:
+
+                            return true;
+
+                }
+
+            }
+
+}
