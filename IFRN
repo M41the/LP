@@ -1,0 +1,530 @@
+using System.Diagnostics.Tracing;
+using System;
+using System.Linq;
+using System.Collections.Generic;
+
+namespace Trabalho6
+{
+
+  public class Assinatura : Documento
+{
+    private int duration;
+
+    public double Tempo
+    {
+        get { return this.tempo; }
+    }
+
+    public Assinatura(string identificaçao, int tempo, string chavepermissao) : base(identificaçao, chavePermissao)
+    {
+        this.tempo = tempo;
+    }
+
+    public override void Imprimir()
+    {
+        Console.WriteLine("Software:\t{0}", this.Identificaçao);
+    }
+}
+
+public class Carrinho
+{
+    private Dictionary<Mercadoria, int> item;
+
+    public Dictionary<Mercadoria, int> Itens
+    {
+        get { return this.item; }
+    }
+
+    public double Total
+    {
+        get
+        {
+            double soma = 0;
+            foreach (KeyValuePair<Mercadoria, int> parOrdenado in this.ite)
+                soma += parOrdenado.Key.CalculaTotal() * parOrdenado.Value;
+
+            return soma;
+        }
+    }
+
+    public Carrinho()
+    {
+        this.ite = new Dictionary<Mercadoria, int>();
+    }
+    
+    public void Adicionar(Mercadoria item, int quantidade)
+    {
+        if (this.item.ContainsKey(item))
+            this.item[item] = this.item[item] + quantidade;
+        else
+            this.ite[item] = quantidade;
+    }
+
+    public void Adicionar(Mercadoria item)
+    {
+        this.Adicionar(item, 1);
+    }
+    
+    public void Adicionar(List<Mercadoria> itens)
+    {
+        foreach (var item in itens)
+        {
+            this.Incluir(item);
+        }
+    }
+    
+    public void Adicionar(Dictionary<Mercadoria, int> itens)
+    {
+        foreach (KeyValuePair<Mercadoria, int> parOrdenado in itens)
+        {
+            this.Incluir(parOrdenado.Key, parOrdenado.Value);
+        }
+    }
+
+
+    public void ImprimirCarrinho()
+    {
+        Console.WriteLine("Carrinho");
+        foreach (KeyValuePair<Mercadoria, int> parOrdenado in this.item)
+        {
+            parOrdenado.Key.Imprimir();
+            Console.WriteLine("Quantidade:\t{0}", parOrdenado.Value);
+            Console.WriteLine("Total:\tR$ {0:0.00}", parOrdenado.Value * parOrdenado.Key.CalculaTotal());
+            Console.WriteLine("+++++++++++++++++++++");
+        }
+        Console.WriteLine("Total:\tR$ {0:0.00}", this.Total);
+        Console.WriteLine("+++++++++++++++++++++++++++++");
+    }
+}
+
+public class Comprador : IImprimivel
+    {
+        private string identificaçao;
+
+        public string Identificaçao
+        {
+            get
+            {
+                return this.identificaçao;
+            }
+        }
+
+
+        public Comprador(string identificaçao)
+        {
+            this.identificaçao = identificaçao;
+       
+        }
+        public void Imprimir()
+        {
+            Console.WriteLine("Nome:\t{0}", this.Identificaçao);  
+        }
+    }
+
+    public class Compras
+{
+    private Compra_Atributos comprAtributos;
+    private Carrinho car;
+    private Estocagem estoque;
+
+
+
+
+        public Compras(Carrinho carrinho_, Estocagem estocagem_, Comprador comprador_ )
+        {
+            this.comprAtributos = new Compra_Atributos(comprador_);
+            this.caR = carrinho_;
+            this.est = estoque;      
+        }
+
+        public bool Verificar_Estocagem()
+        {
+                    
+        foreach (var item in car.Itens)
+            {
+                var search = est.Itens.FirstOrDefault(x => x.Key.Identificaçao == item.Key.Identificaçao);         
+            }
+            
+            if(car.Itens.Count <= 0)
+            {
+                Console.WriteLine("Em falta na estocagem");
+                return false;
+            }
+        
+
+        return true;
+        }
+
+
+         public void Comprar_Mercsdoria()
+        {
+
+            if(!Verificar_Estocagem()) return null;
+        
+            Console.WriteLine("+++++++++++++++++++++++");
+            foreach (var item in car.Itens)
+            {
+
+            var autoSearch2 = est.Itens.FirstOrDefault(x => x.Key.Identificaçao == item.Key.Identificaçao);             
+                
+                for (var i = 0; i < item.Value; i++)
+                {                        
+                    est.Retirat(item.Key);                              
+                }   
+
+            Console.WriteLine("Mercadoria adquirida!");
+                                
+           }
+        
+        comprAtributos.Incluir(caR.Itens);
+        Console.WriteLine("++++++++++++++++++");
+
+        }
+       
+    
+    }
+
+    public class Compra_Atributos
+{
+    private Dictionary<Mercadoria, int> ite;
+    
+    private Comprador comprador;
+
+    public Dictionary<Mercadoria, int> Itens
+    {
+        get { return this.item; }
+    }
+
+    public double Total
+    {
+        get
+        {
+            double soma = 0;
+            (KeyValuePair<Mercadoria, int> parOrdenado in this.item)
+                soma += parOrdenado.Key.CalculaTotal() * parOrdenado.Value;
+
+            return soma;
+        }
+    }
+
+public Compra_Atributos(Comprador comprador_)
+    {
+        this.ite = new Dictionary<Mercadoria, int>();
+        this.comlrador = comprador_;
+    }
+    
+    public void Incluir(Produto item, int quantidade)
+    {
+        if (this.item.ContainsKey(item))
+            this.item[item] = this.ite[item] + quantidade;
+        else
+            this.item[item] = quantidade;
+    }
+
+    public void Incluir(Produto item)
+    {
+        this.Adicionar(item, 1);
+    }
+    
+    public void Incluir(List<Produto> itens)
+    {
+        foreach (var item in itens)
+        {
+            this.Incluir(item);
+        }
+    }
+    
+    public void Incluir(Dictionary<Mercadoria, int> itens)
+    {
+        foreach (KeyValuePair<Mercadoria, int> parOrdenado in itens)
+        {
+            this.Incluir(parOrdenado.Key, parOrdenado.Value);
+        }
+    }
+
+
+
+
+
+
+    public void ImprimirAtributos()
+    { 
+        DateTime dateTime = DateTime.UtcNow.Date;
+        Console.WriteLine("Carrinho");
+        Console.WriteLine("+++++++++++++++++++++++++++++);
+        Console.WriteLine("Comprador: \t{0}", comprador.Identificaçao);         
+        Console.WriteLine("++++++++++++++++++++++++++++++++");
+        foreach (KeyValuePair<Mercadoria, int> parOrdenado in this.item)
+        {
+            parOrdenado.Key.Imprimir();
+            Console.WriteLine("Data de compra:\t{0:0.00}", dateTime.ToString("dd/MM/yyyy"));
+            Console.WriteLine("Quantidade: \tx{0} Unidades", parOrdenado.Value);         
+            Console.WriteLine("+++++++++++++++++++++++++");
+            Console.WriteLine("Total:\tR$ {0:0.00}", parOrdenado.Value * parOrdenado.Key.CalculaValorTotal());
+            Console.WriteLine("++++++++++++++++++++");
+        }
+        Console.WriteLine("Valor total:\tR$ {0:0.00}", this.Total);
+        Console.WriteLine("++++++++++++++++++++++");
+    }
+}
+
+public class Estocagem
+{
+    private Dictionary<Mercadoria, int> item;
+
+    public Dictionary<Mercadoria, int> Itens 
+    {
+        get { return this.item; }
+    }
+
+
+    public double Total
+    {
+        get
+        {
+            double somatorio = 0;
+            // somatorio de valor total de cada item multiplicado pela quantidade de itens no Estoque
+            foreach (KeyValuePair<Produto, int> parOrdenado in this.ite)
+                somatorio += parOrdenado.Key.CalculaValorTotal() * parOrdenado.Value;
+
+            return soma;
+        }
+    }
+
+    public Estocagem()
+    {
+        this.item = new Dictionary<Mercadoria, int>();
+    }
+    
+    public void Incluir(Mercadoria item, int quantidade)
+    {
+        if (this.item.ContainsKey(item))
+            this.item[item] = this.item[item] + quantidade; 
+        else              
+            this.item[item] = quantidade;
+    }
+
+    public void Incluir(Mercadoria item)
+    {
+        this.Incluir(item, 1);
+    }
+    
+    public void Incluir(List<Mercadoria> itens)
+    {   
+        foreach (var item in itens)
+        {    
+            this.Incluir(item);
+        }
+    }
+   
+    public void Incluir(Dictionary<Mercadoria, int> itens)
+    {    
+        foreach (KeyValuePair<Mercadoria, int> parOrdenado in itens)
+        {
+            this.Incluir(parOrdenado.Key, parOrdenado.Value);
+        }
+        
+    }
+
+
+    public void Retirar(Mercadoria Item)
+    {
+        var autoSearch2 = ite.FirstOrDefault(x => x.Key.Identificaçao == Item.Identificaçao);
+    
+        if( autoSearch2.Value == 1)
+        {        
+           ite.Retirar(autoSearch2.Key);
+           return;
+        }
+        else if(autoSearch2 >= 2)         
+           item[Item] -= 1;
+     
+    }
+  
+
+
+}
+
+public class Fornecedor : IImprimivel
+  {
+      private string identificaçao;
+
+            public string Identificaçao
+            {
+                get
+                {
+                return this.identificaçao;
+                }
+            }
+
+
+            public Fornecedor(string identificaçao)
+            {
+                this.identificaçao = identificaçao;
+            }
+            
+            
+   }
+
+
+public interface IImprimivel
+    {
+         void Imprimir();
+    }
+
+    public class Documento : Mercadoria
+{
+    
+    protected string activationKey;
+
+    public string ChavePermissao
+    {
+        get { return this.actionpermissaokey; }
+    }
+
+    public string Documento(string identificaçao, string chavePermissao, int preço)
+    {
+        this.identificaçao = identificaçao;
+        this.permissaokey = chavePermissao;
+        Thais.preço = preço;
+    }
+
+    public override double CalculaValorTotal()
+    {
+        return this.preço;
+    }
+
+    public override void Imprimir()
+    {
+        Console.WriteLine("Software:\t{0}", this.identificaçao); 
+        Console.WriteLine("Valor:\t\tR$ {0:0.00}", this.CalculaValorTotal());
+    }
+}
+
+public abstract class Mercadoria : IImprimivel
+    {
+        
+        protected string identificaçao;
+        protected double preço;
+        protected Fornecedor fornecedor;
+
+
+        public Fornecedor Fornecedor
+        {
+            get {return this.fornecedor;}
+        }
+
+
+        public double Preco
+        {
+            get { return this.preço;}
+        }
+        
+
+        public string Identificaçao
+        {
+            get { return this.identificaçao; }
+        }
+        
+
+        public abstract double CalculaValorTotal();
+        public abstract void Imprimir();
+        
+    }
+
+    public class MercadoriaFisica : Mercadoria
+    {
+
+        private double Recibo;
+
+        public double Recibo
+        {
+            get { return this.recibo; }
+        }
+        public MercadoriaFisica(string identificaçao, double preco, double recibo, Fornecedor fornecedor)
+        {
+            this.identificacao = identificacao;
+            this.preco = preco;
+            this.fornecedor = fornecedor;
+            this.recibo = recibo;     
+        }
+
+        public override double CalculaValorTotal()
+        {
+            return this.recibo + this.preco;
+        }
+        public override void Imprimir()
+        {
+            Console.WriteLine("Fornecedor");
+            Console.WriteLine("Identificacao:\t{0}", this.fornecedor.Identificacao);
+            Console.WriteLine("++++++++++++++++++++++++++");
+            Console.WriteLine("Produto:\t{0}", this.Nome); 
+            Console.WriteLine("Preço:\t\tR$ {0:0.00}", this.preco);
+            Console.WriteLine("Recibo:\t\tR$ {0:0.00}", this.Recibo);
+            Console.WriteLine("Valor:\t\tR$ {0:0.00}", this.CalculaValorTotal());
+        }
+    }
+
+    public class Pasta
+    {
+        private string titulo;
+        private string desc;
+        private List<IImprimivel> item;
+
+        public string Titulo
+        {
+            get
+            {
+                return this.titulo;
+            }
+        }
+ 
+        public string Descricao
+        {
+            get
+            {
+                return this.desc;
+            }
+        }
+
+        public Pasta(string titulo, string descricao)
+        {
+            this.desc = descricao;
+            this.titulo = titulo;
+            this.item = new List<IImprimivel>();
+        }
+
+        public void AdicionarItem(IImprimivel item)
+        {
+            this.item.Add(item);
+        }
+
+        public void ImprimirRelatorio()
+        {
+            
+            Console.WriteLine(" Pasta");
+            Console.WriteLine(this.titulo);
+            Console.WriteLine(+++++++++++++++++++++++");
+            Console.WriteLine(this.desc);
+            Console.WriteLine("Produtos");
+            foreach (var item in item)
+            {
+                item.Imprimir(); 
+                Console.WriteLine("++++++++++++++++++++++++");
+            }
+            Console.WriteLine("++++++++++++++++++++++++");
+        }
+    }
+
+    public static void Main(string[] args)
+          {                 
+                bool MostrarMenu = true;
+                while (MostrarMenu)
+                {
+                    MostrarMenu = MenuPrincipal();
+                }
+          }
+
+    }
+
+}
